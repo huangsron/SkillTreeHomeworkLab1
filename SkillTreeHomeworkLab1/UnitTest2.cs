@@ -91,8 +91,8 @@ namespace SkillTreeHomeworkLab1
         public void Test_PageGroupCount_sum_revenue_groupby_count()
         {
             //建立以筆數來計算 revenue
-            var grouptCount = 4;
-            var target = new PageGroupCount(grouptCount);
+            var groupCount = 4;
+            var target = new PageGroupCount(groupCount);
 
             var expected = new int[] { 50, 66, 60 };
             var actual = target.SumRevenue(_datasource);
@@ -103,9 +103,10 @@ namespace SkillTreeHomeworkLab1
         [TestMethod]
         public void Test_PageGroupCount_sum_cost_groupby_count()
         {
-            var grouptCount = 3;
+            var groupCount = 3;
+
             //建立以筆數來計算 cost
-            var target = new PageGroupCount(grouptCount);
+            var target = new PageGroupCount(groupCount);
 
             var expected = new int[] { 6, 15, 24, 21 };
             var actual = target.SumCost(_datasource);
