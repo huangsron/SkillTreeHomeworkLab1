@@ -6,49 +6,51 @@ using System.Linq.Expressions;
 
 namespace SkillTreeHomeworkLab1
 {
-    /// <summary>
-    /// order model
-    /// </summary>
-    internal class OrderModel
-    {
-        public int Id { get; set; }
-
-        public int Cost { get; set; }
-
-        public int Revenue { get; set; }
-
-        public int SellPrice { get; set; }
-    }
-
-    internal interface ISum
-    {
-        int Invoke(IEnumerable<OrderModel> collection);
-    }
-
-    internal class GroupCount
+    internal class PageGroupCount
     {
         private readonly int _count;
-        private readonly ISum _calculator;
 
-        public GroupCount(int count, ISum calculator)
+        public PageGroupCount(int count)
         {
             _count = count;
-            _calculator = calculator;
         }
 
-        public IEnumerable<int> Invoke(IEnumerable<OrderModel> collection)
+        public IEnumerable<int> SumCost(IEnumerable<OrderModel> collection)
         {
-            var total = collection.Count();
+            var totalCount = collection.Count();
             var skip = 0;
 
             var result = new List<int>();
 
-            while (total >= 0)
+            while (totalCount >= 0)
             {
                 // add to result
-                result.Add(_calculator.Invoke(collection.Skip(skip).Take(_count)));
+                var sum = collection.Skip(skip).Take(_count).Sum(e => e.Cost);
 
-                total -= _count;
+                result.Add(sum);
+
+                totalCount -= _count;
+                skip += _count;
+            }
+
+            return result;
+        }
+
+        public IEnumerable<int> SumRevenue(IEnumerable<OrderModel> collection)
+        {
+            var totalCount = collection.Count();
+            var skip = 0;
+
+            var result = new List<int>();
+
+            while (totalCount >= 0)
+            {
+                // add to result
+                var sum = collection.Skip(skip).Take(_count).Sum(e => e.Revenue);
+
+                result.Add(sum);
+
+                totalCount -= _count;
                 skip += _count;
             }
 
@@ -57,32 +59,10 @@ namespace SkillTreeHomeworkLab1
     }
 
     /// <summary>
-    /// calculator cost by count
-    /// </summary>
-    internal class SumCost : ISum
-    {
-        public int Invoke(IEnumerable<OrderModel> collection)
-        {
-            return collection.Sum(e => e.Cost);
-        }
-    }
-
-    /// <summary>
-    /// calculator cost by count
-    /// </summary>
-    internal class SumRevenue : ISum
-    {
-        public int Invoke(IEnumerable<OrderModel> collection)
-        {
-            return collection.Sum(e => e.Revenue);
-        }
-    }
-
-    /// <summary>
-    /// 商業邏輯測試
+    /// 去除商業邏輯測試
     /// </summary>
     [TestClass]
-    public class UnitTest1
+    public class PageGroupCountTest
     {
         private static List<OrderModel> _datasource;
 
@@ -108,25 +88,27 @@ namespace SkillTreeHomeworkLab1
         }
 
         [TestMethod]
-        public void Test_GroupCount_sum_revenue_groupby_count()
+        public void Test_PageGroupCount_sum_revenue_groupby_count()
         {
-            var expected = new int[] { 50, 66, 60 };
+            //建立以筆數來計算 revenue
             var grouptCount = 4;
-            var target = new GroupCount(grouptCount, new SumRevenue());
+            var target = new PageGroupCount(grouptCount);
 
-            var actual = target.Invoke(_datasource);
+            var expected = new int[] { 50, 66, 60 };
+            var actual = target.SumRevenue(_datasource);
 
             CollectionAssert.AreEqual(expected, actual.ToList());
         }
 
         [TestMethod]
-        public void Test_GroupCount_sum_cost_groupby_count()
+        public void Test_PageGroupCount_sum_cost_groupby_count()
         {
-            var expected = new int[] { 6, 15, 24, 21 };
             var grouptCount = 3;
-            var target = new GroupCount(grouptCount, new SumCost());
+            //建立以筆數來計算 cost
+            var target = new PageGroupCount(grouptCount);
 
-            var actual = target.Invoke(_datasource);
+            var expected = new int[] { 6, 15, 24, 21 };
+            var actual = target.SumCost(_datasource);
 
             CollectionAssert.AreEqual(expected, actual.ToList());
         }
