@@ -8,14 +8,11 @@ namespace SkillTreeHomeworkLab1
 {
     internal class PageGroupCount
     {
-        private readonly int _count;
-
         public PageGroupCount(int count)
         {
-            _count = count;
         }
 
-        public IEnumerable<int> SumCost(IEnumerable<OrderModel> collection)
+        public IEnumerable<int> SumCost(int pageCount, IEnumerable<OrderModel> collection)
         {
             var totalCount = collection.Count();
             var skip = 0;
@@ -25,18 +22,18 @@ namespace SkillTreeHomeworkLab1
             while (totalCount >= 0)
             {
                 // add to result
-                var sum = collection.Skip(skip).Take(_count).Sum(e => e.Cost);
+                var sum = collection.Skip(skip).Take(pageCount).Sum(e => e.Cost);
 
                 result.Add(sum);
 
-                totalCount -= _count;
-                skip += _count;
+                totalCount -= pageCount;
+                skip += pageCount;
             }
 
             return result;
         }
 
-        public IEnumerable<int> SumRevenue(IEnumerable<OrderModel> collection)
+        public IEnumerable<int> SumRevenue(int pageCount, IEnumerable<OrderModel> collection)
         {
             var totalCount = collection.Count();
             var skip = 0;
@@ -46,12 +43,12 @@ namespace SkillTreeHomeworkLab1
             while (totalCount >= 0)
             {
                 // add to result
-                var sum = collection.Skip(skip).Take(_count).Sum(e => e.Revenue);
+                var sum = collection.Skip(skip).Take(pageCount).Sum(e => e.Revenue);
 
                 result.Add(sum);
 
-                totalCount -= _count;
-                skip += _count;
+                totalCount -= pageCount;
+                skip += pageCount;
             }
 
             return result;
@@ -96,7 +93,7 @@ namespace SkillTreeHomeworkLab1
             var target = new PageGroupCount(groupCount);
 
             var expected = new List<int> { 50, 66, 60 };
-            var actual = target.SumRevenue(_datasource);
+            var actual = target.SumRevenue(groupCount, _datasource);
 
             CollectionAssert.AreEqual(expected, actual.ToList());
         }
@@ -110,7 +107,7 @@ namespace SkillTreeHomeworkLab1
             var target = new PageGroupCount(groupCount);
 
             var expected = new List<int>() { 6, 15, 24, 21 };
-            var actual = target.SumCost(_datasource);
+            var actual = target.SumCost(groupCount, _datasource);
 
             CollectionAssert.AreEqual(expected, actual.ToList());
         }
